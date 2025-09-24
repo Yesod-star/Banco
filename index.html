@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Login & Cadastro Supabase</title>
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js";
+
+    const supabaseUrl = "https://cdahzjliaatyukafugfn.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNkYWh6amxpYWF0eXVrYWZ1Z2ZuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzUxNjU3NiwiZXhwIjoyMDczMDkyNTc2fQ.lU_EY8F5F9FxF_B1uO_0Dv_64nvgsZAXA78e2Ne7GWc";
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    async function cadastrar(event) {
+      event.preventDefault();
+      const nome = document.getElementById("nomeCadastro").value;
+      const senha = document.getElementById("senhaCadastro").value;
+
+      const { data, error } = await supabase
+        .from("login")
+        .insert([{ nome, senha }]);
+
+      if (error) alert("Erro ao cadastrar: " + error.message);
+      else alert("Usuário cadastrado: " + data[0].nome);
+    }
+
+    async function login(event) {
+      event.preventDefault();
+      const nome = document.getElementById("nomeLogin").value;
+      const senha = document.getElementById("senhaLogin").value;
+
+      const { data, error } = await supabase
+        .from("login")
+        .select("*")        
+        .eq("nome", nome) 
+        .eq("senha", senha)  
+        .single();
+
+      if (error) alert("Erro: " + error.message);
+      else if (data) alert("Bem-vindo, " + data.nome + "!");
+      else alert("Usuário ou senha inválidos!");
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("formCadastro").addEventListener("submit", cadastrar);
+      document.getElementById("formLogin").addEventListener("submit", login);
+    });
+  </script>
+</head>
+<body>
+  <h1>Login & Cadastro - Supabase</h1>
+
+  <h2>Cadastro</h2>
+  <form id="formCadastro">
+    <label>Nome:</label><br>
+    <input type="text" id="nomeCadastro" required><br>
+    <label>Senha:</label><br>
+    <input type="password" id="senhaCadastro" required><br><br>
+    <button type="submit">Cadastrar</button>
+  </form>
+
+  <hr>
+
+  <h2>Login</h2>
+  <form id="formLogin">
+    <label>Nome:</label><br>
+    <input type="text" id="nomeLogin" required><br>
+    <label>Senha:</label><br>
+    <input type="password" id="senhaLogin" required><br><br>
+    <button type="submit">Entrar</button>
+  </form>
+</body>
+</html>
